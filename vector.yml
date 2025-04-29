@@ -1,0 +1,127 @@
+api:
+  enabled: true
+  address: 0.0.0.0:8686
+
+sources:
+  docker:
+    type: docker_logs
+  demo:
+    type: demo_logs
+    format: apache_common
+    interval: 10
+  vector_metrics:
+    type: internal_metrics
+  syslog:
+    type: syslog
+    address: "0.0.0.0:514"  # Port to listen for syslog messages
+    mode: "rfc5424"  # Specify the syslog format. This could be "rfc3164", "rfc5424", or "ietf" depending on what you need.
+    
+
+transforms:
+  msg_parser:
+    type: remap
+    inputs: [docker, syslog]
+    source: |
+      .message = parse_json(.message) ?? .message
+
+
+sinks:
+  elasticsearch:
+    type: elasticsearch
+    inputs: [demo, msg_parser]
+    endpoints: [http://localhost:9428/insert/elasticsearch/]
+    mode: bulk
+    api_version: v8
+    compression: gzip
+    healthcheck:
+      enabled: true
+    request:
+      headers:
+        VL-Stream-Fields: source_type,label.com.docker.compose.service
+        VL-Time-Field: timestamp
+        VL-Msg-Field: message,msg,_msg,message.message,message.log
+        AccountID: "0"
+        ProjectID: "0"
+  victoriametrics:
+    type: prometheus_remote_write
+    endpoint: http://victoriametrics:8428/api/v1/write
+    inputs: [vector_metrics, msg_parser]
+    healthcheck:
+      enabled: true
+  prometheus_exporter:
+    type: prometheus_exporter
+    inputs:
+      - vector_metrics
+    healthcheck:
+      enabled: true
+    address: "localhost:9598"  # Expose the metrics on port 8687 for Prometheus to scrape
+    namespace: "vector"  # The namespace for the metrics exposed
+    # Optional: you can add any other labels you want here
+    labels:
+      source_type: "vector_metrics"
+      environment: "production"
+
+
+
+
+#  TEST SETTINGS 
+sources:
+  syslog_server:
+    type: syslog
+    address: "0.0.0.0:9000"
+    max_length: 102400
+    mode: udp
+    permit_origin:
+      - "10.0.0.0/8"
+      - "127.0.0.0/8"
+      - "192.168.0.0/16"
+
+transforms:
+  parse_syslog:
+    type: remap
+    inputs:
+      - syslog_server
+    drop_on_error: false
+    drop_on_abort: false
+    source: |
+      .appname = string!(.appname)
+      if contains(.appname, "mathias") {
+        .fields = parse_json!(.message)
+      }
+      if contains(.appname, "pbs") {
+        .fields = parse_grok!(.message, "UPID:%{DATA:pbs_host}:%{DATA:task_id_1}:%{DATA:task_id_2}:%{DATA:task_id_3}:%{DATA:task_id_4}:%{DATA:cmd}:%{DATA:task_path}:%{DATA:user}:%{GREEDYDATA:log_message}")
+        .fields.owner = "infra"
+      }
+
+sinks:
+  vlogs:
+    inputs:
+      - parse_syslog
+    type: elasticsearch
+    endpoints:
+      - "http://127.0.0.1:9428/insert/elasticsearch/"
+    api_version: "v8"
+    compression: gzip
+    healthcheck:
+      enabled: false
+    query: 
+      _msg_field: message
+      _time_field: timestamp
+      _stream_fields:
+        - host
+        - container_name
+        - appname
+
+
+sources:
+  vector_metrics:
+    type: 
+      internal_metrics
+
+sinks:
+  prometheus:
+    type: prometheus_remote_write
+    endpoint:
+      - "http://0.0.0.0:9598"
+    inputs: 
+      - vector_metrics

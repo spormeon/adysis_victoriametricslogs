@@ -1,0 +1,338 @@
+global:
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  # evaluation_interval: 1m
+
+scrape_configs:
+  # Victoria Metrics- metrics
+  - job_name: 'Adysis - Victoria Metrics'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['localhost:8428']
+        labels:
+          target_name: 'Victoria Metrics'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'http'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'Adysis - Victoria Metrics'  # Replacing instance with a more meaningful name
+
+  # Victoria Logs- metrics
+  - job_name: 'Adysis - Victoria Metrics - Logs'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['localhsot:9428']
+        labels:
+          target_name: 'Victoria Metrics - Logs'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'http'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'Adysis - Victoria Metrics - Logs'  # Replacing instance with a more meaningful name
+    
+  # Alerts - metrics
+  - job_name: 'Adysis - Alert Manager'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['localhost:9093']
+        labels:
+          target_name: 'Alert Manager'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'http'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'Adysis - Alert Manager'  # Replacing instance with a more meaningful name
+
+  # Vector - metrics
+  - job_name: 'Adysis - Vector Logs'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['localhost:9598']
+        labels:
+          target_name: 'Vector Logs'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'http'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'Adysis - Vector Logs'  # Replacing instance with a more meaningful name
+
+
+
+
+
+# This is the block for all prebid cache related scrapes  
+  # PBC - Haproxy - metrics
+  - job_name: 'PBC - Haproxy'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-liitpqy4i9.bunny.run:80']
+        labels:
+          target_name: 'PBC - Haproxy'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'http'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBC - Haproxy'  # Replacing instance with a more meaningful name
+ 
+# PREBID CACHE INSTANCES
+  # PBC - Central - metrics
+  - job_name: 'PBC - West'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-ryj25x4qb7.bunny.run:443']
+        labels:
+          target_name: 'PBC - West'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBC - West'  # Replacing instance with a more meaningful name
+  # PBC - Main - metrics
+  - job_name: 'PBC - Main'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-2z711paurd.bunny.run:443']
+        labels:
+          target_name: 'PBC - Main'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBC - Main'  # Replacing instance with a more meaningful name
+  # PBC - East - metrics
+  - job_name: 'PBC - East'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-6as3f4a15a.bunny.run:443']
+        labels:
+          target_name: 'PBC - East'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBC - East'  # Replacing instance with a more meaningful name
+
+
+#PREBID CACHE VALKEY/ REDIS INSTANCES
+  # PBC - Central - Valkey - metrics
+  - job_name: 'PBC - Central - Valkey'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-pcm91lra0o.bunny.run:9090']
+        labels:
+          target_name: 'PBC - Central - Valkey'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBC - Central - Valkey'  # Replacing instance with a more meaningful name
+  # PBC - West - Valkey - metrics
+  - job_name: 'PBC - West - Valkey'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-i0mm2dixh6.bunny.run:9090']
+        labels:
+          target_name: 'PBC - West - Valkey'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBC - West - Valkey'  # Replacing instance with a more meaningful name
+  # PBC - East - Valkey - metrics
+  - job_name: 'PBC - East - Valkey'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-ozr1325ta6.bunny.run:9090']
+        labels:
+          target_name: 'PBC - East - Valkey'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBC - East - Valkey'  # Replacing instance with a more meaningful name
+
+  
+
+
+
+# This is the block for all prebid server related scrapes
+  # PBS - Haproxy - metrics
+  - job_name: 'PBS - Haproxy'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-pqk0iwg8ro.bunny.run:80']
+        labels:
+          target_name: 'PBS - Haproxy'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'http'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - Haproxy'  # Replacing instance with a more meaningful name
+
+# PREBID SERVER INSTANCES
+  # PBS - Main - metrics
+  - job_name: 'PBS - Main'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-znvva6c0j7.bunny.run']
+        labels:
+          target_name: 'PBS - Main'
+          environment: 'production'
+          region: 'us-west'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - Main'  # Replacing instance with a more meaningful name
+  # PBS - Middle East - metrics
+  - job_name: 'PBS - Middle East'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-ewwjky10or.bunny.run']
+        labels:
+          target_name: 'PBS - Middle East'
+          environment: 'production'
+          region: 'middle_east'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - Middle East'  # Replacing instance with a more meaningful name
+  # PBS - Africa - metrics
+  - job_name: 'PBS - Africa'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-4neox2ohy0.bunny.run']
+        labels:
+          target_name: 'PBS - Africa'
+          environment: 'production'
+          region: 'africa'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - Africa'  # Replacing instance with a more meaningful name
+  # PBS - North America - metrics
+  - job_name: 'PBS - North America'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-ykzzyidsol.bunny.run']
+        labels:
+          target_name: 'PBS - North Ameica'
+          environment: 'production'
+          region: 'north_america'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - North America'  # Replacing instance with a more meaningful name
+  # PBS - South America - metrics
+  - job_name: 'PBS - South America'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-wyd0k5pvhb.bunny.run']
+        labels:
+          target_name: 'PBS - South Ameica'
+          environment: 'production'
+          region: 'south_america'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - South America'  # Replacing instance with a more meaningful name
+  # PBS - Oceania - metrics
+  - job_name: 'PBS - Oceania'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-pyphlbdxpv.bunny.run']
+        labels:
+          target_name: 'PBS - Oceania'
+          environment: 'production'
+          region: 'oceania'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - Oceania'  # Replacing instance with a more meaningful name
+  # PBS - Asia - metrics
+  - job_name: 'PBS - Asia'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['mc-wi9zo0ys35.bunny.run']
+        labels:
+          target_name: 'PBS - Asia'
+          environment: 'production'
+          region: 'asia'
+          service: 'metrics'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: 'instance'
+        replacement: 'PBS - Asia'  # Replacing instance with a more meaningful name
+
+
+
+
+
+  # PBS - Vitess - metrics
