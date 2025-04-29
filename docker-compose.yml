@@ -1,35 +1,35 @@
 services:
   # Victoria Metrics instance, storing metrics
-  victoria-metrics:
-    image: adysis/victoriametrics:v2.0.8
-    container_name: victoriametrics
-    ports:
-      - 8080:8080  # UI access
-      - 8428:8428
-      - 8089:8089
-      - 8089:8089/udp
-      - 2003:2003
-      - 2003:2003/udp
-      - 4242:4242
-    volumes:
-      - victoria-metrics-data:/storage  # Defined volume
-      - /proc:/host/proc:ro
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Scraping config
-      - ./vm_metrics_config.sh:/etc/vm/vm_metrics_config.sh  # Custom config script
-    environment:
-      - ENABLE_TCP6=true  # Enable TCP over IPv6
-    # command:
-    #   - "sh /etc/vm/vm_metrics_config.sh"  # Executes the custom config script
-    restart: always
-    networks:
-      - adysis-metrics
-    # network_mode: host  # Use host network mode directly
-    dns:
-      - 127.0.0.1  # Docker's internal DNS resolver
+  # victoria-metrics:
+  #   image: adysis/victoriametrics:v2.0.8
+  #   container_name: victoriametrics
+  #   ports:
+  #     - 8080:8080  # UI access
+  #     - 8428:8428
+  #     - 8089:8089
+  #     - 8089:8089/udp
+  #     - 2003:2003
+  #     - 2003:2003/udp
+  #     - 4242:4242
+  #   volumes:
+  #     - victoria-metrics-data:/storage  # Defined volume
+  #     - /proc:/host/proc:ro
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Scraping config
+  #     - ./vm_metrics_config.sh:/etc/vm/vm_metrics_config.sh  # Custom config script
+  #   environment:
+  #     - ENABLE_TCP6=true  # Enable TCP over IPv6
+  #   # command:
+  #   #   - "sh /etc/vm/vm_metrics_config.sh"  # Executes the custom config script
+  #   restart: always
+  #   networks:
+  #     - adysis-metrics
+  #   # network_mode: host  # Use host network mode directly
+  #   dns:
+  #     - 127.0.0.1  # Docker's internal DNS resolver
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: victoriametrics/victoria-logs:v1.19.0-victorialogs
+    image: adysis/victoriametrics-logs:v1.0.1
     container_name: victorialogs
     ports:
       - 8686:8686  # Exposing the logs API on port 8686
@@ -42,8 +42,8 @@ services:
     networks:
       - adysis-metrics
     # network_mode: host  # Use host network mode directly
-    dns:
-      - 127.0.0.1  # Docker's internal DNS resolver
+    # dns:
+    #   - 127.0.0.1  # Docker's internal DNS resolver
 
   # Vector service to collect logs and send to VictoriaLogs
   vector:
@@ -63,33 +63,33 @@ services:
     networks:
       - adysis-metrics
     # network_mode: host  # Use host network mode directly
-    dns:
-      - 127.0.0.1  # Docker's internal DNS resolver
+    # dns:
+    #   - 127.0.0.1  # Docker's internal DNS resolver
 
   # Alertmanager for handling alerts
-  alertmanager:
-    container_name: alertmanager
-    image: prom/alertmanager:v0.28.1
-    volumes:
-      # - .alertmanager.yml:/config/alertmanager.yml
-      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    environment:
-      - ENABLE_TCP6=true  # Enable TCP over IPv6
-    # command:
-      # - ./alertmanager.yml=/alertmanager.yml
-      # - "--web.listen-address=:9093"  # Optional: bind to specific address or port
-    ports:
-      - 9093:9093  # metrics
-      - 8880:8880  
-    restart: always
-    networks:
-      - adysis-metrics
-    # network_mode: host  # Use host network mode directly
-    dns:
-      - 127.0.0.1  # Docker's internal DNS resolver
+  # alertmanager:
+  #   container_name: alertmanager
+  #   image: prom/alertmanager:v0.28.1
+  #   volumes:
+  #     # - .alertmanager.yml:/config/alertmanager.yml
+  #     - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+  #   environment:
+  #     - ENABLE_TCP6=true  # Enable TCP over IPv6
+  #   # command:
+  #     # - ./alertmanager.yml=/alertmanager.yml
+  #     # - "--web.listen-address=:9093"  # Optional: bind to specific address or port
+  #   ports:
+  #     - 9093:9093  # metrics
+  #     - 8880:8880  
+  #   restart: always
+  #   networks:
+  #     - adysis-metrics
+  #   # network_mode: host  # Use host network mode directly
+  #   dns:
+  #     - 127.0.0.1  # Docker's internal DNS resolver
 
 volumes:
-  victoria-metrics-data: {}  # Define the volume for Victoria Metrics
+  # victoria-metrics-data: {}  # Define the volume for Victoria Metrics
   victorialogs-data: {}  # Define the volume for VictoriaLogs
 
 
