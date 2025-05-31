@@ -38,6 +38,14 @@ services:
       - victorialogs-data:/vlogs  # Volume to store logs data
     # environment:
     #   - ENABLE_TCP6=true  # Enable TCP over IPv6
+    command:
+      - -storageDataPath=/vlogs
+      - -loggerFormat=json
+      - -syslog.listenAddr.tcp=0.0.0.0:514
+      # - -datadog.streamFields=service,hostname,ddsource
+      # - -journald.streamFields=_HOSTNAME,_SYSTEMD_UNIT,_PID
+      # - -journald.ignoreFields=MESSAGE_ID,INVOCATION_ID,USER_INVOCATION_ID,
+      # - -journald.ignoreFields=_BOOT_ID,_MACHINE_ID,_SYSTEMD_INVOCATION_ID,_STREAM_ID,_UID
     restart: always
     networks:
       - adysis-metrics
@@ -50,7 +58,8 @@ services:
     image: docker.io/timberio/vector:0.46.X-distroless-libc
     container_name: vector
     volumes:
-      - ./vector.yml:/vector.yaml  # Vector configuration file
+      - ./vector.yml:/usr/local/etc/victoriametricslogs/vector.yaml  # Vector configuration file
+      # - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     environment:
       - VECTOR_LOG="error"  # Enable debug logs for troubleshooting
       # - ENABLE_TCP6=true  # Enable TCP over IPv6
@@ -67,6 +76,16 @@ services:
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
+
+  # victoriametrics:
+  #   image: victoriametrics/victoria-metrics:v1.112.0
+  #   ports:
+  #     - '8428:8428'
+  #   command:
+  #     - -storageDataPath=/vmsingle
+  #     - -loggerFormat=json
+  #   volumes:
+  #     - victoriametrics:/vmsingle
 
   # Alertmanager for handling alerts
   # alertmanager:
@@ -92,7 +111,8 @@ services:
 
 volumes:
   # victoria-metrics-data: {}  # Define the volume for Victoria Metrics
-  victorialogs-data: {}  # Define the volume for VictoriaLogs
+  victorialogs-data:   # Define the volume for VictoriaLogs
+  # victoriametrics: 
 
 
 networks:

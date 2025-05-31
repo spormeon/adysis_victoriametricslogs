@@ -71,6 +71,8 @@ logging:
 
 #  TEST SETTINGS 
 sources:
+  docker:
+    type: docker_logs
   syslog:
     type: syslog
     address: "0.0.0.0:514"
@@ -86,6 +88,7 @@ transforms:
   parse_syslog:
     type: remap
     inputs:
+      - docker
       - syslog
     drop_on_error: false
     drop_on_abort: false
@@ -98,26 +101,28 @@ transforms:
     #     .fields = parse_grok!(.message, "UPID:%{DATA:pbs_host}:%{DATA:task_id_1}:%{DATA:task_id_2}:%{DATA:task_id_3}:%{DATA:task_id_4}:%{DATA:cmd}:%{DATA:task_path}:%{DATA:user}:%{GREEDYDATA:log_message}")
     #     .fields.owner = "infra"
     #   }
-    source: |
-      # Parse the log line into individual fields
-      .log_fields = split!(.message, "|")
+    # source: |
+    #   # Parse the log line into individual fields
+    #   .log_fields = split!(.message, "|")
       
-      # Map each field to a specific name
-      .cache_status = .log_fields[0]
-      .status_code = .log_fields[1]
-      .timestamp = .log_fields[2]
-      .bytes_sent = .log_fields[3]
-      .pull_zone_id = .log_fields[4]
-      .remote_ip = .log_fields[5]
-      .referer_url = .log_fields[6]
-      .url = .log_fields[7]
-      .edge_location = .log_fields[8]
-      .user_agent = .log_fields[9]
-      .unique_request_id = .log_fields[10]
-      .country_code = .log_fields[11]
+    #   # Map each field to a specific name
+    #   .cache_status = .log_fields[0]
+    #   .status_code = .log_fields[1]
+    #   .timestamp = .log_fields[2]
+    #   .bytes_sent = .log_fields[3]
+    #   .pull_zone_id = .log_fields[4]
+    #   .remote_ip = .log_fields[5]
+    #   .referer_url = .log_fields[6]
+    #   .url = .log_fields[7]
+    #   .edge_location = .log_fields[8]
+    #   .user_agent = .log_fields[9]
+    #   .unique_request_id = .log_fields[10]
+    #   .country_code = .log_fields[11]
 
-      # Optionally, you can also convert timestamp to a proper time format if needed
-      .timestamp = parse_date!(.timestamp, "%Y-%m-%dT%H:%M:%S")  # Adjust the format if needed
+    #   # Optionally, you can also convert timestamp to a proper time format if needed
+    #   .timestamp = parse_date!(.timestamp, "%Y-%m-%dT%H:%M:%S")  # Adjust the format if needed
+    source: |
+       .message = parse_json(.message) ?? .message
       
 sinks:
   elasticsearch:
