@@ -71,21 +71,22 @@ logging:
 
 #  TEST SETTINGS 
 sources:
-  syslog_server:
+  syslog:
     type: syslog
-    address: "0.0.0.0:9000"
+    address: "0.0.0.0:514"
     max_length: 102400
-    mode: tcp
+    # mode: tcp
     # permit_origin:
     #   - "10.0.0.0/8"
     #   - "127.0.0.0/8"
     #   - "192.168.0.0/16"
-
+    mode: "rfc5424"  # Specify the syslog format. This could be "rfc3164", "rfc5424", or "ietf" depending on what you need.
+    
 transforms:
   parse_syslog:
     type: remap
     inputs:
-      - syslog_server
+      - syslog
     drop_on_error: false
     drop_on_abort: false
     # source: |
@@ -119,12 +120,12 @@ transforms:
       .timestamp = parse_date!(.timestamp, "%Y-%m-%dT%H:%M:%S")  # Adjust the format if needed
       
 sinks:
-  vlogs:
+  elasticsearch:
     inputs:
       - parse_syslog
     type: elasticsearch
     endpoints:
-      - "http://127.0.0.1:9428/insert/elasticsearch/"
+      - "http://0.0.0.0:9428/insert/elasticsearch/"
     api_version: "v8"
     compression: gzip
     healthcheck:
@@ -136,15 +137,17 @@ sinks:
       #   - host
       #   - container_name
       #   - appname
-      _stream_fields:
-        - cache_status
-        - status_code
-        - remote_ip
-        - referer_url
-        - url
-        - edge_location
-        - user_agent
-        - country_code
+      # _stream_fields:
+      #   - cache_status
+      #   - status_code
+      #   - remote_ip
+      #   - referer_url
+      #   - url
+      #   - edge_location
+      #   - user_agent
+      #   - country_code
+      _stream_fields: cache_status, status_code, remote_ip, referer_url, url, edge_location, user_agent, country_code
+      debug: "1"
 
 # sources:
 #   vector_metrics:
