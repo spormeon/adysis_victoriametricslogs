@@ -32,7 +32,7 @@ services:
     image: adysis/victoriametrics-logs:v1.0.1
     container_name: victorialogs
     ports:
-      - 8686:8686  # Exposing the logs API on port 8686
+      # - 8686:8686  # Exposing the logs API on port 8686
       - 9428:9428  # ui
     volumes:
       - victorialogs-data:/vlogs  # Volume to store logs data
@@ -55,8 +55,9 @@ services:
       - VECTOR_LOG="debug"  # Enable debug logs for troubleshooting
       - ENABLE_TCP6=true  # Enable TCP over IPv6
     ports:
-      - 8687:8686  # Exposing the Vector API (if needed)
-      - 9598:9598 
+      - 8686:8686  # Exposing the Vector API (if needed)
+      - 9598:9598  # Metrics scraping or other purposes
+      - 9000:9000  # Exposing the syslog UDP port on port 9000 
     restart: always
     depends_on:
       - victorialogs
