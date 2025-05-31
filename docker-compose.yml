@@ -58,6 +58,7 @@ services:
       - 8687:8686  # Exposing the Vector API (if needed)
       - 9598:9598  # Metrics scraping or other purposes
       - 9000:9000  # Exposing the syslog UDP port on port 9000 
+      - 514:514  # syslog endpoint
     restart: always
     depends_on:
       - victorialogs
