@@ -75,7 +75,7 @@ sources:
     type: syslog
     address: "0.0.0.0:9000"
     max_length: 102400
-    mode: udp
+    mode: tcp
     # permit_origin:
     #   - "10.0.0.0/8"
     #   - "127.0.0.0/8"

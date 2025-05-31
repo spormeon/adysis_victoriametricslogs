@@ -29,19 +29,19 @@ services:
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: adysis/victoriametrics-logs:v1.0.2
+    image: adysis/victoriametrics-logs:v1.0.4
     container_name: victorialogs
     ports:
-      # - 8686:8686  # Exposing the logs API on port 8686
+      - 8686:8686  # Exposing the logs API on port 8686
       - 9428:9428  # ui
     volumes:
       - victorialogs-data:/vlogs  # Volume to store logs data
-    environment:
-      - ENABLE_TCP6=true  # Enable TCP over IPv6
+    # environment:
+    #   - ENABLE_TCP6=true  # Enable TCP over IPv6
     restart: always
-    networks:
-      - adysis-metrics
-    # network_mode: host  # Use host network mode directly
+    # networks:
+    #   - adysis-metrics
+    network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
 
@@ -53,17 +53,17 @@ services:
       - ./vector.yml:/vector.yaml  # Vector configuration file
     environment:
       - VECTOR_LOG="error"  # Enable debug logs for troubleshooting
-      - ENABLE_TCP6=true  # Enable TCP over IPv6
+      # - ENABLE_TCP6=true  # Enable TCP over IPv6
     ports:
-      - 8686:8686  # Exposing the Vector API (if needed)
+      - 8687:8686  # Exposing the Vector API (if needed)
       - 9598:9598  # Metrics scraping or other purposes
       - 9000:9000  # Exposing the syslog UDP port on port 9000 
     restart: always
     depends_on:
       - victorialogs
-    networks:
-      - adysis-metrics
-    # network_mode: host  # Use host network mode directly
+    # networks:
+    #   - adysis-metrics
+    network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
 
@@ -94,10 +94,10 @@ volumes:
   victorialogs-data: {}  # Define the volume for VictoriaLogs
 
 
-networks:
-  adysis-metrics:
-    name: adysis-metrics
-    driver: bridge # Use the external network shared with Victoria Metrics and Perses
+# networks:
+#   adysis-metrics:
+#     name: adysis-metrics
+#     driver: bridge # Use the external network shared with Victoria Metrics and Perses
 
 
 
