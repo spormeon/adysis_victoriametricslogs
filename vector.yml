@@ -2,6 +2,11 @@ api:
   enabled: true
   address: 0.0.0.0:8686
 
+# Set logging level to 'info' or 'error' to suppress debug logs
+logging:
+  level: error  # or 'error'
+  disable: true  # Disable internal logs (if this option is available).
+
 # sources:
 #   docker:
 #     type: docker_logs

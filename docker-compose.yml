@@ -29,7 +29,7 @@ services:
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: adysis/victoriametrics-logs:v1.0.1
+    image: adysis/victoriametrics-logs:v1.0.2
     container_name: victorialogs
     ports:
       # - 8686:8686  # Exposing the logs API on port 8686
@@ -52,7 +52,7 @@ services:
     volumes:
       - ./vector.yml:/vector.yaml  # Vector configuration file
     environment:
-      - VECTOR_LOG="debug"  # Enable debug logs for troubleshooting
+      - VECTOR_LOG="error"  # Enable debug logs for troubleshooting
       - ENABLE_TCP6=true  # Enable TCP over IPv6
     ports:
       - 8686:8686  # Exposing the Vector API (if needed)
