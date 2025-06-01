@@ -47,8 +47,8 @@ services:
       # - -journald.ignoreFields=MESSAGE_ID,INVOCATION_ID,USER_INVOCATION_ID,
       # - -journald.ignoreFields=_BOOT_ID,_MACHINE_ID,_SYSTEMD_INVOCATION_ID,_STREAM_ID,_UID
     restart: always
-    # networks:
-    #   - adysis-metrics
+    networks:
+      - adysis-metrics
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
@@ -79,8 +79,8 @@ services:
     depends_on:
       - victorialogs
     user: root
-    # networks:
-    #   - adysis-metrics
+    networks:
+      - adysis-metrics
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
@@ -123,10 +123,10 @@ volumes:
   # victoriametrics: 
 
 
-# networks:
-#   adysis-metrics:
-#     name: adysis-metrics
-#     driver: bridge # Use the external network shared with Victoria Metrics and Perses
+networks:
+  adysis-metrics:
+    name: adysis-metrics
+    driver: bridge # Use the external network shared with Victoria Metrics and Perses
 
 
 
