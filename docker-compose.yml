@@ -29,11 +29,11 @@ services:
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: adysis/victoriametrics-logs:v1.1.0
+    image: adysis/victoriametrics-logs:v1.1.5
     container_name: victorialogs
     ports:
       # - 8686:8686  # Exposing the logs API on port 8686
-      - "9428:9428"  # ui
+      - 9428:9428  # ui
     volumes:
       - victorialogs-data:/vlogs  # Volume to store logs data
     # environment:
@@ -48,7 +48,9 @@ services:
       # - -journald.ignoreFields=_BOOT_ID,_MACHINE_ID,_SYSTEMD_INVOCATION_ID,_STREAM_ID,_UID
     restart: always
     networks:
-      - adysis-metrics
+      - adysis-logs
+        # aliases:
+        #   - victorialogs
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
@@ -80,7 +82,9 @@ services:
       - victorialogs
     user: root
     networks:
-      - adysis-metrics
+      - adysis-logs
+        # aliases:
+        #   - vector
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
@@ -124,8 +128,8 @@ volumes:
 
 
 networks:
-  adysis-metrics:
-    name: adysis-metrics
+  adysis-logs:
+    name: adysis-logs
     driver: bridge # Use the external network shared with Victoria Metrics and Perses
 
 
