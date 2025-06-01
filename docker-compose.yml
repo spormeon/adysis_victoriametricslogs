@@ -29,7 +29,7 @@ services:
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: adysis/victoriametrics-logs:v1.1.5
+    image: adysis/victoriametrics-logs:v1.1.7
     container_name: victorialogs
     ports:
       # - 8686:8686  # Exposing the logs API on port 8686
@@ -131,7 +131,7 @@ networks:
   adysis-logs:
     name: adysis-logs
     driver: bridge # Use the external network shared with Victoria Metrics and Perses
-
+    # attachable: true  # Allow manual attachment of containers to the network
 
 
 
