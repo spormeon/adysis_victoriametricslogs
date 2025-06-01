@@ -32,47 +32,55 @@ services:
     image: adysis/victoriametrics-logs:v1.0.5
     container_name: victorialogs
     ports:
-      - 8686:8686  # Exposing the logs API on port 8686
-      - 9428:9428  # ui
+      # - 8686:8686  # Exposing the logs API on port 8686
+      - "9428:9428"  # ui
     volumes:
       - victorialogs-data:/vlogs  # Volume to store logs data
     # environment:
     #   - ENABLE_TCP6=true  # Enable TCP over IPv6
     command:
-      - -storageDataPath=/vlogs
-      - -loggerFormat=json
-      - -syslog.listenAddr.tcp=0.0.0.0:514
+      - "-storageDataPath=/vlogs"
+      # - -loggerFormat=json
+      # - -syslog.listenAddr.tcp=0.0.0.0:514
       # - -datadog.streamFields=service,hostname,ddsource
       # - -journald.streamFields=_HOSTNAME,_SYSTEMD_UNIT,_PID
       # - -journald.ignoreFields=MESSAGE_ID,INVOCATION_ID,USER_INVOCATION_ID,
       # - -journald.ignoreFields=_BOOT_ID,_MACHINE_ID,_SYSTEMD_INVOCATION_ID,_STREAM_ID,_UID
     restart: always
-    networks:
-      - adysis-metrics
+    # networks:
+    #   - adysis-metrics
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
 
   # Vector service to collect logs and send to VictoriaLogs
   vector:
-    image: docker.io/timberio/vector:0.46.X-distroless-libc
+    image: docker.io/timberio/vector:0.47.X-alpine
     container_name: vector
     volumes:
-      - ./vector.yml:/usr/local/etc/victoriametricslogs/vector.yaml  # Vector configuration file
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - type: bind
+        source: /var/lib/docker
+        target: /var/lib/docker
+      # - ./vector.yml:/usr/local/etc/victoriametricslogs/vector.yaml:ro  # Vector configuration file
+      - ./vector.yml:/etc/vector/vector.yaml:ro  # Vector configuration file
       # - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-    environment:
-      - VECTOR_LOG="error"  # Enable debug logs for troubleshooting
-      # - ENABLE_TCP6=true  # Enable TCP over IPv6
+    # environment:
+    #   - VECTOR_LOG="error"  # Enable debug logs for troubleshooting
+    #   # - ENABLE_TCP6=true  # Enable TCP over IPv6
     ports:
-      - 8687:8686  # Exposing the Vector API (if needed)
-      - 9598:9598  # Metrics scraping or other purposes
-      - 9000:9000  # Exposing the syslog UDP port on port 9000 
-      - 514:514  # syslog endpoint
+      - 8686:8686  # Exposing the Vector API (if needed)
+      # - 9598:9598  # Metrics scraping or other purposes
+      # - 9000:9000  # Exposing the syslog UDP port on port 9000 
+      # - 514:514  # syslog endpoint
     restart: always
     depends_on:
       - victorialogs
-    networks:
-      - adysis-metrics
+    user: root
+    # networks:
+    #   - adysis-metrics
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
@@ -111,14 +119,14 @@ services:
 
 volumes:
   # victoria-metrics-data: {}  # Define the volume for Victoria Metrics
-  victorialogs-data:   # Define the volume for VictoriaLogs
+  victorialogs-data: {}  # Define the volume for VictoriaLogs
   # victoriametrics: 
 
 
-networks:
-  adysis-metrics:
-    name: adysis-metrics
-    driver: bridge # Use the external network shared with Victoria Metrics and Perses
+# networks:
+#   adysis-metrics:
+#     name: adysis-metrics
+#     driver: bridge # Use the external network shared with Victoria Metrics and Perses
 
 
 

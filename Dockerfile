@@ -1,5 +1,5 @@
 # Use the official Victoria Metrics image as the base image
-FROM victoriametrics/victoria-logs:v1.19.0-victorialogs
+FROM victoriametrics/victoria-logs:v1.23.2-victorialogs
 # FROM adysis/victoriametrics:v1.9.5
 
 # # # Switch to root user to ensure we can change file permissions
