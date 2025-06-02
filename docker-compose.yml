@@ -35,12 +35,15 @@ services:
       # - 8428:8428  # Exposing the logs API on port 8686
       - 9428:9428  # ui
       - 9429:9428 # use for VMl domain access
+      - 514:514  # expose for syslogs
     volumes:
       - victorialogs-data:/vlogs  # Volume to store logs data
     # environment:
     #   - ENABLE_TCP6=true  # Enable TCP over IPv6
     command:
       - "-storageDataPath=/vlogs"
+      - "-syslog.listenAddr.tcp=:514"   # Listen on TCP port 514 for syslog messages
+      - "-syslog.listenAddr.udp=:514"   # Optionally listen on UDP port 514 for syslog messages
       # - "-http=:9428"  # Expose UI on port 8080
       # - "-api-http=:8428"  # Expose API on port 8428
       # - -loggerFormat=json
@@ -85,7 +88,7 @@ services:
       - 8686:8686  # Exposing the Vector API (if needed)
       # - 9598:9598  # Metrics scraping or other purposes
       # - 9000:9000  # Exposing the syslog UDP port on port 9000 
-      - 514:514  # syslog endpoint
+      # - 514:514  # syslog endpoint
     restart: always
     depends_on:
       - victorialogs

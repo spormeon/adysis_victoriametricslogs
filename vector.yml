@@ -181,16 +181,16 @@ sources:
     interval: 10
   # vector_metrics:
   #   type: internal_metrics
-  syslog:
-    type: syslog
-    address: "109.224.228.134:514"
-    max_length: 102400
-    mode: tcp
-    # permit_origin:
-    #   - "10.0.0.0/8"
-    #   - "127.0.0.0/8"
-    #   - "192.168.0.0/16"
-    # mode: "rfc5424"  # Specify the syslog format. This could be "rfc3164", "rfc5424", or "ietf" depending on what you need.
+  # syslog:
+  #   type: syslog
+  #   address: "109.224.228.134:514"
+  #   max_length: 102400
+  #   mode: tcp
+  #   # permit_origin:
+  #   #   - "10.0.0.0/8"
+  #   #   - "127.0.0.0/8"
+  #   #   - "192.168.0.0/16"
+  #   # mode: "rfc5424"  # Specify the syslog format. This could be "rfc3164", "rfc5424", or "ietf" depending on what you need.
 
 
 transforms:
@@ -199,44 +199,44 @@ transforms:
     inputs: [docker]
     source: |
       .message = parse_json(.message) ?? .message
-  parse_syslog:
-    type: remap
-    inputs:
-      # - docker
-      - syslog
-    drop_on_error: false
-    drop_on_abort: false
-    # source: |
-    #   .appname = string!(.appname)
-    #   if contains(.appname, "mathias") {
-    #     .fields = parse_json!(.message)
-    #   }
-    #   if contains(.appname, "pbs") {
-    #     .fields = parse_grok!(.message, "UPID:%{DATA:pbs_host}:%{DATA:task_id_1}:%{DATA:task_id_2}:%{DATA:task_id_3}:%{DATA:task_id_4}:%{DATA:cmd}:%{DATA:task_path}:%{DATA:user}:%{GREEDYDATA:log_message}")
-    #     .fields.owner = "infra"
-    #   }
-    source: |
-      # Parse the log line into individual fields
-      .log_fields = split!(.message, "|")
+  # parse_syslog:
+  #   type: remap
+  #   inputs:
+  #     # - docker
+  #     - syslog
+  #   drop_on_error: false
+  #   drop_on_abort: false
+  #   # source: |
+  #   #   .appname = string!(.appname)
+  #   #   if contains(.appname, "mathias") {
+  #   #     .fields = parse_json!(.message)
+  #   #   }
+  #   #   if contains(.appname, "pbs") {
+  #   #     .fields = parse_grok!(.message, "UPID:%{DATA:pbs_host}:%{DATA:task_id_1}:%{DATA:task_id_2}:%{DATA:task_id_3}:%{DATA:task_id_4}:%{DATA:cmd}:%{DATA:task_path}:%{DATA:user}:%{GREEDYDATA:log_message}")
+  #   #     .fields.owner = "infra"
+  #   #   }
+  #   source: |
+  #     # Parse the log line into individual fields
+  #     .log_fields = split!(.message, "|")
       
-      # Map each field to a specific name
-      .cache_status = .log_fields[0]
-      .status_code = .log_fields[1]
-      .timestamp = .log_fields[2]
-      .bytes_sent = .log_fields[3]
-      .pull_zone_id = .log_fields[4]
-      .remote_ip = .log_fields[5]
-      .referer_url = .log_fields[6]
-      .url = .log_fields[7]
-      .edge_location = .log_fields[8]
-      .user_agent = .log_fields[9]
-      .unique_request_id = .log_fields[10]
-      .country_code = .log_fields[11]
+  #     # Map each field to a specific name
+  #     .cache_status = .log_fields[0]
+  #     .status_code = .log_fields[1]
+  #     .timestamp = .log_fields[2]
+  #     .bytes_sent = .log_fields[3]
+  #     .pull_zone_id = .log_fields[4]
+  #     .remote_ip = .log_fields[5]
+  #     .referer_url = .log_fields[6]
+  #     .url = .log_fields[7]
+  #     .edge_location = .log_fields[8]
+  #     .user_agent = .log_fields[9]
+  #     .unique_request_id = .log_fields[10]
+  #     .country_code = .log_fields[11]
 
-      # Optionally, you can also convert timestamp to a proper time format if needed
-      .timestamp = parse_timestamp!(.timestamp, "%Y-%m-%dT%H:%M:%S")  # Adjust the format if needed
-    # source: |
-    #    .message = parse_json(.message) ?? .message
+  #     # Optionally, you can also convert timestamp to a proper time format if needed
+  #     .timestamp = parse_timestamp!(.timestamp, "%Y-%m-%dT%H:%M:%S")  # Adjust the format if needed
+  #   # source: |
+  #   #    .message = parse_json(.message) ?? .message
 
 
 sinks:
@@ -258,39 +258,39 @@ sinks:
         VL-Msg-Field: message,msg,_msg,message.message,message.log
         AccountID: "0"
         ProjectID: "0"
-  bunnylogs:
-    inputs: [parse_syslog]
-    type: elasticsearch
-    endpoints: [http://109.224.228.134:9429/insert/elasticsearch/]
-    api_version: "v8"
-    compression: gzip
-    healthcheck:
-      enabled: false
-    request:
-      headers:
-        VL-Stream-Fields: source_type,label.com.docker.compose.service
-        VL-Time-Field: timestamp
-        VL-Msg-Field: message,msg,_msg,message.message,message.log
-        AccountID: "0"
-        ProjectID: "0"
-    query: 
-      _msg_field: message
-      _time_field: timestamp
-      # _stream_fields:
-      #   - host
-      #   - container_name
-      #   - appname
-      # _stream_fields:
-      #   - cache_status
-      #   - status_code
-      #   - remote_ip
-      #   - referer_url
-      #   - url
-      #   - edge_location
-      #   - user_agent
-      #   - country_code
-      _stream_fields: cache_status, status_code, remote_ip, referer_url, url, edge_location, user_agent, country_code
-      debug: "1"
+  # bunnylogs:
+  #   inputs: [parse_syslog]
+  #   type: elasticsearch
+  #   endpoints: [http://109.224.228.134:9429/insert/elasticsearch/]
+  #   api_version: "v8"
+  #   compression: gzip
+  #   healthcheck:
+  #     enabled: false
+  #   request:
+  #     headers:
+  #       VL-Stream-Fields: source_type,label.com.docker.compose.service
+  #       VL-Time-Field: timestamp
+  #       VL-Msg-Field: message,msg,_msg,message.message,message.log
+  #       AccountID: "0"
+  #       ProjectID: "0"
+  #   query: 
+  #     _msg_field: message
+  #     _time_field: timestamp
+  #     # _stream_fields:
+  #     #   - host
+  #     #   - container_name
+  #     #   - appname
+  #     # _stream_fields:
+  #     #   - cache_status
+  #     #   - status_code
+  #     #   - remote_ip
+  #     #   - referer_url
+  #     #   - url
+  #     #   - edge_location
+  #     #   - user_agent
+  #     #   - country_code
+  #     _stream_fields: cache_status, status_code, remote_ip, referer_url, url, edge_location, user_agent, country_code
+  #     debug: "1"
 
 
 
