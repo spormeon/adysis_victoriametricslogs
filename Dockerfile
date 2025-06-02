@@ -1,32 +1,24 @@
 # Use the official Victoria Metrics image as the base image
 FROM victoriametrics/victoria-logs:v1.23.2-victorialogs
-# FROM adysis/victoriametrics:v1.9.5
 
-# # # Switch to root user to ensure we can change file permissions
-# USER root
+# Copy the custom config script into the container
+COPY ./vm_metrics_config.sh /etc/vm/vm_metrics_config.sh
 
-# # # Copy the custom configuration script into the container
-# COPY vm_metrics_config.sh /etc/vm/vm_metrics_config.sh
+# Ensure the script is executable
+RUN chmod 755 /etc/vm/vm_metrics_config.sh
 
-# # # Set execute permissions on the script
-# RUN chmod +x /etc/vm/vm_metrics_config.sh
+# Ensure the file is owned by root
+RUN chown root:root /etc/vm/vm_metrics_config.sh
 
-# # # Verify the permissions of the script during the build process
-# RUN ls -l /etc/vm/vm_metrics_config.sh
+# Set the user to root
+USER root
 
-# # # Other files and configurations
-# # COPY prometheus.yml /etc/prometheus/prometheus.yml
-# # COPY alertmanager.yml /etc/alertmanager/alertmanager.yml
+# Test: only run the script and see if it outputs the echo statements correctly
+CMD ["/bin/sh", "-c", "/etc/vm/vm_metrics_config.sh"]
 
 
-# # # Default command to run the script along with other required flags
-# # # Set the entrypoint to execute the shell script and then start the Victoria Metrics process
-# ENTRYPOINT ["/bin/sh", "-c", \
-#   "/etc/vm/vm_metrics_config.sh && \
-#   /victorialogs -httpListenAddr=0.0.0.0:9428 \
-#   /vector -httpListenAddr=0.0.0.0:8686 "]
-  
-# # # ENTRYPOINT ["/bin/sh", "-c", "/etc/vm/vm_metrics_config.sh"]
 
-# # # Ensure container runs as root if needed
-# USER root
+
+
+
+

@@ -181,16 +181,7 @@ sources:
     interval: 10
   # vector_metrics:
   #   type: internal_metrics
-  # syslog:
-  #   type: syslog
-  #   address: "109.224.228.134:514"
-  #   max_length: 102400
-  #   mode: tcp
-  #   # permit_origin:
-  #   #   - "10.0.0.0/8"
-  #   #   - "127.0.0.0/8"
-  #   #   - "192.168.0.0/16"
-  #   # mode: "rfc5424"  # Specify the syslog format. This could be "rfc3164", "rfc5424", or "ietf" depending on what you need.
+  #  
 
 
 transforms:

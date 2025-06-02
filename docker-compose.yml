@@ -29,7 +29,8 @@ services:
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: adysis/victoriametrics-logs:v1.2.2
+    image: adysis/victoriametrics-logs:v1.2.5
+    # image: victoriametrics/victoria-logs:v1.23.2-victorialogs
     container_name: victorialogs
     ports:
       # - 8428:8428  # Exposing the logs API on port 8686
@@ -38,20 +39,28 @@ services:
       - 514:514  # expose for syslogs
     volumes:
       - victorialogs-data:/vlogs  # Volume to store logs data
+      # - ./vm_metrics_config.sh:/etc/vm/vm_metrics_config.sh  # Custom config script
+    # entrypoint: ["/bin/sh", "-c", "/etc/vm/vm_metrics_config.sh && /victoria-logs-prod"]
     # environment:
     #   - ENABLE_TCP6=true  # Enable TCP over IPv6
-    command:
-      - "-storageDataPath=/vlogs"
-      - "-syslog.listenAddr.tcp=0.0.0.0:514"   # Listen on TCP port 514 for syslog messages
-      - "-syslog.listenAddr.udp=0.0.0.0:514"   # Optionally listen on UDP port 514 for syslog messages     
-      # - "-http=:9428"  # Expose UI on port 8080
-      # - "-api-http=:8428"  # Expose API on port 8428
-      # - -loggerFormat=json
-      # - -syslog.listenAddr.tcp=0.0.0.0:514
-      # - -datadog.streamFields=service,hostname,ddsource
-      # - -journald.streamFields=_HOSTNAME,_SYSTEMD_UNIT,_PID
-      # - -journald.ignoreFields=MESSAGE_ID,INVOCATION_ID,USER_INVOCATION_ID,
-      # - -journald.ignoreFields=_BOOT_ID,_MACHINE_ID,_SYSTEMD_INVOCATION_ID,_STREAM_ID,_UID
+    # command:
+    #   - "-storageDataPath=/vlogs"
+    #   - "-syslog.listenAddr.tcp=0.0.0.0:514"   # Listen on TCP port 514 for syslog messages
+    #   - "-syslog.listenAddr.udp=0.0.0.0:514"   # Optionally listen on UDP port 514 for syslog messages 
+    #   - "-syslog.compressMethod.tcp=gzip"
+    #   # - "-http=:9428"  # Expose UI on port 8080
+    #   # - "-api-http=:8428"  # Expose API on port 8428
+    #   # - -loggerFormat=json
+    #   # - -syslog.listenAddr.tcp=0.0.0.0:514
+    #   # - -datadog.streamFields=service,hostname,ddsource
+    #   # - -journald.streamFields=_HOSTNAME,_SYSTEMD_UNIT,_PID
+    #   # - -journald.ignoreFields=MESSAGE_ID,INVOCATION_ID,USER_INVOCATION_ID,
+    #   # - -journald.ignoreFields=_BOOT_ID,_MACHINE_ID,_SYSTEMD_INVOCATION_ID,_STREAM_ID,_UID
+    command: >
+      -storageDataPath=/vlogs
+      -syslog.listenAddr.tcp=0.0.0.0:514
+      -syslog.listenAddr.udp=0.0.0.0:514
+      -syslog.compressMethod.tcp=gzip
     restart: always
     networks:
       - adysis-logs
