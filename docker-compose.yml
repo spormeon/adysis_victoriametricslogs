@@ -29,7 +29,7 @@ services:
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: adysis/victoriametrics-logs:v1.2.5
+    image: adysis/victoriametrics-logs:v1.3.0
     # image: victoriametrics/victoria-logs:v1.23.2-victorialogs
     container_name: victorialogs
     ports:
@@ -83,11 +83,16 @@ services:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
+        volume:
+          nocopy: true
       - type: bind
         source: /var/lib/docker
         target: /var/lib/docker
+        volume:
+          nocopy: true
       # - ./vector.yml:/usr/local/etc/victoriametricslogs/vector.yaml:ro  # Vector configuration file
       - /var/run/docker.sock:/var/run/docker.sock  # Allow access to Docker logs
+      - /var/lib/docker:/var/lib/docker
       - ./vector.yml:/etc/vector/vector.yaml:ro  # Vector configuration file
       # - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     # environment:
