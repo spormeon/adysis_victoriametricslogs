@@ -29,17 +29,20 @@ services:
 
   # Victoria Logs instance, storing and querying logs
   victorialogs:
-    image: adysis/victoriametrics-logs:v1.1.7
+    image: adysis/victoriametrics-logs:v1.2.1
     container_name: victorialogs
     ports:
-      # - 8686:8686  # Exposing the logs API on port 8686
+      # - 8428:8428  # Exposing the logs API on port 8686
       - 9428:9428  # ui
+      - 9429:9428 # use for VMl domain access
     volumes:
       - victorialogs-data:/vlogs  # Volume to store logs data
     # environment:
     #   - ENABLE_TCP6=true  # Enable TCP over IPv6
     command:
       - "-storageDataPath=/vlogs"
+      # - "-http=:9428"  # Expose UI on port 8080
+      # - "-api-http=:8428"  # Expose API on port 8428
       # - -loggerFormat=json
       # - -syslog.listenAddr.tcp=0.0.0.0:514
       # - -datadog.streamFields=service,hostname,ddsource
@@ -54,6 +57,11 @@ services:
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
+    logging:
+      driver: "json-file"  # Use the default logging driver
+      options:
+        max-size: "10m"  # Optional: Rotate logs when they exceed 10 MB
+        max-file: "3"  # Keep 3 rotated log files
 
   # Vector service to collect logs and send to VictoriaLogs
   vector:
@@ -67,6 +75,7 @@ services:
         source: /var/lib/docker
         target: /var/lib/docker
       # - ./vector.yml:/usr/local/etc/victoriametricslogs/vector.yaml:ro  # Vector configuration file
+      - /var/run/docker.sock:/var/run/docker.sock  # Allow access to Docker logs
       - ./vector.yml:/etc/vector/vector.yaml:ro  # Vector configuration file
       # - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     # environment:
@@ -76,7 +85,7 @@ services:
       - 8686:8686  # Exposing the Vector API (if needed)
       # - 9598:9598  # Metrics scraping or other purposes
       # - 9000:9000  # Exposing the syslog UDP port on port 9000 
-      # - 514:514  # syslog endpoint
+      - 514:514  # syslog endpoint
     restart: always
     depends_on:
       - victorialogs
@@ -88,6 +97,11 @@ services:
     # network_mode: host  # Use host network mode directly
     # dns:
     #   - 127.0.0.1  # Docker's internal DNS resolver
+    logging:
+      driver: "json-file"  # Use the default logging driver
+      options:
+        max-size: "10m"  # Optional: Rotate logs when they exceed 10 MB
+        max-file: "3"  # Keep 3 rotated log files
 
   # victoriametrics:
   #   image: victoriametrics/victoria-metrics:v1.112.0
