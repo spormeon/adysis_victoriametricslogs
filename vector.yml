@@ -271,8 +271,8 @@ sinks:
         VL-Stream-Fields: source_type,label.com.docker.compose.service
         VL-Time-Field: timestamp
         VL-Msg-Field: message,msg,_msg,message.message,message.log
-        AccountID: "1"
-        ProjectID: "1"
+        AccountID: "0"
+        ProjectID: "0"
     query: 
       _msg_field: message
       _time_field: timestamp
