@@ -42,8 +42,8 @@ services:
     #   - ENABLE_TCP6=true  # Enable TCP over IPv6
     command:
       - "-storageDataPath=/vlogs"
-      - "-syslog.listenAddr.tcp=:514"   # Listen on TCP port 514 for syslog messages
-      - "-syslog.listenAddr.udp=:514"   # Optionally listen on UDP port 514 for syslog messages
+      - "-syslog.listenAddr.tcp=0.0.0.0:514"   # Listen on TCP port 514 for syslog messages
+      - "-syslog.listenAddr.udp=0.0.0.0:514"   # Optionally listen on UDP port 514 for syslog messages     
       # - "-http=:9428"  # Expose UI on port 8080
       # - "-api-http=:8428"  # Expose API on port 8428
       # - -loggerFormat=json
