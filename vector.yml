@@ -170,8 +170,8 @@
 
 
 api:
-  enabled: true
-  address: "0.0.0.0:8686"
+  enabled: false
+  # address: "0.0.0.0:8686"
 sources:
   docker:
     type: docker_logs
